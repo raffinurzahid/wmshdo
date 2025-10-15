@@ -7,3 +7,25 @@ https://claude.ai/share/50fe8b71-74cd-45f1-bec1-69240e745f05
 
 link claude ai android
 https://claude.ai/share/2385bdff-1373-411c-ba14-2a27c371d22b
+
+-semua button yang ada di halaman transaksi belum bisa digunakan(search, clear export, import)
+-NB132-13 sudah bisa digunakan tapi blm bertambah stoknya saat rcv dan blm berkurang saat
+dps dan asg seharusnya itu tetap bertambah stok atau berkurang karena kan master datanya
+tetep 132, semua gitu saat nambahin data di master data barang contoh lain PC60 nah saat
+transaksi PC60-2 atau PC60-14 itu bisa bertambah dan berkurang 
+- itu berlaku juga kalo kita ngedit stok misalnya masuk 100 dan itu salah input(typo) mau 
+ngedit 10 itu lansung berkurang 80 paham ngga claude?
+- ketika berpindah halaman atau refresh di halaman transaksi history transaksi menhilang
+lansung kosong itu kenapa yaa? itu error kah?
+- sudah terhubung dengan halam dashboard.ejs dan master-barang.ejs nice banget trs sudah
+terhubung ke master-gudang.ejs blm? kalo blm hubungkan karena data transaksi ini beberapa 
+akan mengisi tabel di halaman master-gudang.ejs gitu claude
+
+-masih failed to inventory blm terhubung dengan halaman lain yaa? seperti transaksi.ejs,
+master-barang.ejs dan master-gudang.ejs
+- hapus card new items, second items, locations, last updated karena ga di perlukan lagi
+- aku cuma butuh tabel yg sudah auto update dari halaman lainnya ketika transaksi(halaman
+transaksi.ejs) dilakukan
+- benerin backendnya karena masih error
+ntah itu melakuan rcv, dps, asg melakukan update(edit)
+ada yg ingin kamu tanyakan claude? atau butuh file yg ku punya?
