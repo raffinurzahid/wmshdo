@@ -8,24 +8,376 @@ https://claude.ai/share/50fe8b71-74cd-45f1-bec1-69240e745f05
 link claude ai android
 https://claude.ai/share/2385bdff-1373-411c-ba14-2a27c371d22b
 
--semua button yang ada di halaman transaksi belum bisa digunakan(search, clear export, import)
--NB132-13 sudah bisa digunakan tapi blm bertambah stoknya saat rcv dan blm berkurang saat
-dps dan asg seharusnya itu tetap bertambah stok atau berkurang karena kan master datanya
-tetep 132, semua gitu saat nambahin data di master data barang contoh lain PC60 nah saat
-transaksi PC60-2 atau PC60-14 itu bisa bertambah dan berkurang 
-- itu berlaku juga kalo kita ngedit stok misalnya masuk 100 dan itu salah input(typo) mau 
-ngedit 10 itu lansung berkurang 80 paham ngga claude?
-- ketika berpindah halaman atau refresh di halaman transaksi history transaksi menhilang
-lansung kosong itu kenapa yaa? itu error kah?
-- sudah terhubung dengan halam dashboard.ejs dan master-barang.ejs nice banget trs sudah
-terhubung ke master-gudang.ejs blm? kalo blm hubungkan karena data transaksi ini beberapa 
-akan mengisi tabel di halaman master-gudang.ejs gitu claude
+skrg kita ngurus halaman master gudang barang, ini kenapa error yaa kamu tau masalahnya?
+seharusnya tabel itu di isi dengan data yang ada di transaksi ejs khusus receiving nah kalo 
+misalnya transaksinya asg dan dps itu barang yg ada di halamangudang yaa keluar ya berkurang 
+gitu sama dengan halaman master barang ejs itu nanti stoknya berkurang dan di halaman dashboard
+juga berkurang sama karena 4 halaman itu saling terhubung tapi kenpa ini error ya?, jadi itu jadi 
+ketika di aku ke halaman barang bisa melihat semua stok barang barang yang masuk tapi kenapa ngga 
+muncul yaa? kamu paham ngga kenapa? atau ada yg ingin kamu tanyakan? aku kasih aja ya kodenya biar 
+tau letak masalahnya dimana dan satu lagi hapus bttton refresh yaa karena ngga berguna lagi soalnya 
+itu udh auto update soalnya ketika transaksi berlansung seharusnya, untuk file backend lainnya akan kukirim nanti
 
--masih failed to inventory blm terhubung dengan halaman lain yaa? seperti transaksi.ejs,
-master-barang.ejs dan master-gudang.ejs
-- hapus card new items, second items, locations, last updated karena ga di perlukan lagi
-- aku cuma butuh tabel yg sudah auto update dari halaman lainnya ketika transaksi(halaman
-transaksi.ejs) dilakukan
-- benerin backendnya karena masih error
-ntah itu melakuan rcv, dps, asg melakukan update(edit)
-ada yg ingin kamu tanyakan claude? atau butuh file yg ku punya?
+masterGudangRoutes.js
+const express = require('express');
+const router = express.Router();
+const masterGudangController = require('../controllers/masterGudangController');
+const { optionalAuth } = require('../middleware/authMiddleware');
+
+console.log('✅ masterGudangRoutes.js loaded');
+
+// Get all inventory
+router.get('/inventory', optionalAuth, (req, res, next) => {
+    console.log('🔍 GET /api/master-gudang/inventory');
+    masterGudangController.getInventory(req, res, next);
+});
+
+// Get inventory by location
+router.get('/inventory/location', optionalAuth, (req, res, next) => {
+    console.log('🔍 GET /api/master-gudang/inventory/location');
+    masterGudangController.getInventoryByLocation(req, res, next);
+});
+
+// Search inventory
+router.get('/inventory/search', optionalAuth, (req, res, next) => {
+    console.log('🔍 GET /api/master-gudang/inventory/search');
+    masterGudangController.searchInventory(req, res, next);
+});
+
+console.log('✅ masterGudangRoutes registered successfully');
+
+module.exports = router;
+
+masterGudangController.js
+const { query } = require('../config/db');
+
+class MasterGudangController {
+    
+    /** Get inventory from gudang table */
+    static async getInventory(req, res) {
+        try {
+            console.log('[MasterGudang] Fetching inventory...');
+            
+            const sql = `
+                SELECT 
+                    id_gudang,
+                    kode_barang,
+                    nama_barang,
+                    jenis_barang,
+                    spesifikasi,
+                    status,
+                    lokasi,
+                    tanggal,
+                    created_at
+                FROM gudang
+                WHERE lokasi ILIKE $1
+                ORDER BY tanggal DESC;
+            `;
+            
+            const result = await query(sql, [`%${lokasi}%`]);
+            
+            res.json({
+                success: true,
+                data: result.rows
+            });
+            
+        } catch (error) {
+            console.error('[MasterGudang] Get By Location Error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Failed to fetch inventory by location',
+                error: error.message
+            });
+        }
+    }
+
+    /** Search inventory */
+    static async searchInventory(req, res) {
+        try {
+            const { q } = req.query;
+            
+            if (!q || q.length < 2) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Search query must be at least 2 characters'
+                });
+            }
+
+            const sql = `
+                SELECT 
+                    id_gudang,
+                    kode_barang,
+                    nama_barang,
+                    jenis_barang,
+                    spesifikasi,
+                    status,
+                    lokasi,
+                    tanggal,
+                    created_at
+                FROM gudang
+                WHERE 
+                    kode_barang ILIKE $1 OR
+                    nama_barang ILIKE $1 OR
+                    jenis_barang ILIKE $1 OR
+                    lokasi ILIKE $1 OR
+                    spesifikasi ILIKE $1
+                ORDER BY tanggal DESC;
+            `;
+            
+            const searchPattern = `%${q}%`;
+            const result = await query(sql, [searchPattern]);
+            
+            res.json({
+                success: true,
+                data: result.rows
+            });
+            
+        } catch (error) {
+            console.error('[MasterGudang] Search Error:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Failed to search inventory',
+                error: error.message
+            });
+        }
+    }
+}
+
+module.exports = MasterGudangController;
+
+gudangModel.js
+const { query } = require('../config/db');
+const { v4: uuidv4 } = require('uuid');
+
+class GudangModel {
+
+    /** Menambahkan gudang baru ke database. */
+    static async create(gudangData, createdBy = null) {
+        const { kode_gudang, nama_gudang, lokasi, kapasitas } = gudangData;
+        const sql = `
+            INSERT INTO gudang (id_gudang, kode_gudang, nama_gudang, lokasi, kapasitas, created_by) 
+            VALUES ($1, $2, $3, $4, $5, $6) 
+            RETURNING *;
+        `;
+        try {
+            const result = await query(sql, [
+                uuidv4(), kode_gudang, nama_gudang, lokasi, kapasitas, createdBy
+            ]);
+            return result.rows[0];
+        } catch (error) {
+            if (error.code === '23505') throw new Error('Kode gudang sudah ada.');
+            throw error;
+        }
+    }
+
+    /** Mengambil semua gudang yang aktif. */
+    static async getAll() {
+        const sql = `SELECT * FROM gudang WHERE deleted_at IS NULL ORDER BY nama_gudang;`;
+        return (await query(sql)).rows;
+    }
+
+    /** Menghitung jumlah gudang yang aktif. */
+    static async countActive() {
+        const sql = `SELECT COUNT(*) FROM gudang WHERE deleted_at IS NULL;`;
+        const result = await query(sql);
+        return parseInt(result.rows[0].count, 10);
+    }
+
+    /** Mengambil statistik umum untuk dashboard. */
+    static async getStats() {
+        const sql = `
+            SELECT 
+                COUNT(*) FILTER (WHERE deleted_at IS NULL) as total_active,
+                COUNT(*) FILTER (WHERE deleted_at IS NOT NULL) as total_deleted,
+                COUNT(DISTINCT lokasi) FILTER (WHERE deleted_at IS NULL) as unique_locations
+            FROM gudang;
+        `;
+        return (await query(sql)).rows[0];
+    }
+
+    /** [OPTIMASI] Mengambil statistik utilisasi untuk SEMUA gudang dalam satu query. */
+    static async getUtilizationStats() {
+        const sql = `
+            SELECT
+                g.id_gudang, g.nama_gudang, g.lokasi, g.kapasitas,
+                COUNT(DISTINCT t.id_barang) AS unique_items,
+                SUM(CASE WHEN t.jenis_transaksi = 'Masuk' THEN t.qty_stok ELSE -t.qty_stok END) AS total_stock
+            FROM gudang g
+            LEFT JOIN transaksi t ON g.id_gudang = t.id_gudang AND t.deleted_at IS NULL
+            WHERE g.deleted_at IS NULL
+            GROUP BY g.id_gudang, g.nama_gudang, g.lokasi, g.kapasitas
+            ORDER BY g.nama_gudang;
+        `;
+        return (await query(sql)).rows;
+    }
+
+    /** [NEW] Mengambil inventory saat ini dari semua transaksi */
+    static async getCurrentInventory() {
+        const sql = `
+            SELECT 
+                b.kode_barang,
+                b.nama_barang,
+                b.jenis_barang,
+                b.spesifikasi,
+                COALESCE(t.status, 'New') as status,
+                COALESCE(t.lokasi, 'Unknown') as lokasi,
+                MAX(t.tanggal_transaksi) as tanggal,
+                SUM(CASE 
+                    WHEN t.jenis_transaksi = 'Masuk' THEN t.qty_stok 
+                    WHEN t.jenis_transaksi = 'Keluar' THEN -t.qty_stok 
+                    ELSE 0 
+                END) as qty
+            FROM transaksi t
+            INNER JOIN barang b ON t.id_barang = b.id_barang
+            WHERE t.deleted_at IS NULL
+            GROUP BY b.kode_barang, b.nama_barang, b.jenis_barang, b.spesifikasi, t.status, t.lokasi
+            HAVING SUM(CASE 
+                WHEN t.jenis_transaksi = 'Masuk' THEN t.qty_stok 
+                WHEN t.jenis_transaksi = 'Keluar' THEN -t.qty_stok 
+                ELSE 0 
+            END) > 0
+            ORDER BY MAX(t.tanggal_transaksi) DESC;
+        `;
+        try {
+            const result = await query(sql);
+            return result.rows;
+        } catch (error) {
+            console.error('[GudangModel.getCurrentInventory] Error:', error);
+            throw error;
+        }
+    }
+
+    /** Mengambil gudang berdasarkan ID */
+    static async getById(id) {
+        const sql = `SELECT * FROM gudang WHERE id_gudang = $1 AND deleted_at IS NULL;`;
+        const result = await query(sql, [id]);
+        return result.rows[0];
+    }
+
+    /** Update gudang */
+    static async update(id, gudangData, updatedBy = null) {
+        const { kode_gudang, nama_gudang, lokasi, kapasitas } = gudangData;
+        const sql = `
+            UPDATE gudang 
+            SET kode_gudang = $1, nama_gudang = $2, lokasi = $3, kapasitas = $4, 
+                updated_by = $5, updated_at = NOW()
+            WHERE id_gudang = $6 AND deleted_at IS NULL
+            RETURNING *;
+        `;
+        const result = await query(sql, [kode_gudang, nama_gudang, lokasi, kapasitas, updatedBy, id]);
+        
+        if (result.rows.length === 0) {
+            throw new Error('Warehouse not found');
+        }
+        
+        return result.rows[0];
+    }
+
+    /** Soft delete gudang */
+    static async softDelete(id, deletedBy = null) {
+        const sql = `
+            UPDATE gudang 
+            SET deleted_at = NOW(), deleted_by = $1
+            WHERE id_gudang = $2
+            RETURNING *;
+        `;
+        const result = await query(sql, [deletedBy, id]);
+        return result.rows[0];
+    }
+
+    /** Hard delete gudang (permanent) */
+    static async delete(id) {
+        const sql = `DELETE FROM gudang WHERE id_gudang = $1 RETURNING *;`;
+        const result = await query(sql, [id]);
+        return result.rows[0];
+    }
+
+    /** Restore soft deleted gudang */
+    static async restore(id) {
+        const sql = `
+            UPDATE gudang 
+            SET deleted_at = NULL, deleted_by = NULL
+            WHERE id_gudang = $1
+            RETURNING *;
+        `;
+        const result = await query(sql, [id]);
+        return result.rows[0];
+    }
+
+    /** Search gudang */
+    static async search(searchTerm) {
+        const sql = `
+            SELECT * FROM gudang 
+            WHERE deleted_at IS NULL
+            AND (
+                kode_gudang ILIKE $1 OR 
+                nama_gudang ILIKE $1 OR 
+                lokasi ILIKE $1
+            )
+            ORDER BY nama_gudang;
+        `;
+        const result = await query(sql, [`%${searchTerm}%`]);
+        return result.rows;
+    }
+
+    /** Get stock details for specific warehouse */
+    static async getStockDetails(warehouseId) {
+        const sql = `
+            SELECT 
+                b.kode_barang,
+                b.nama_barang,
+                b.jenis_barang,
+                SUM(CASE WHEN t.jenis_transaksi = 'Masuk' THEN t.qty_stok ELSE -t.qty_stok END) as current_stock
+            FROM transaksi t
+            INNER JOIN barang b ON t.id_barang = b.id_barang
+            WHERE t.id_gudang = $1 AND t.deleted_at IS NULL
+            GROUP BY b.kode_barang, b.nama_barang, b.jenis_barang
+            HAVING SUM(CASE WHEN t.jenis_transaksi = 'Masuk' THEN t.qty_stok ELSE -t.qty_stok END) > 0;
+        `;
+        const result = await query(sql, [warehouseId]);
+        return result.rows;
+    }
+
+    /** Get available items in warehouse */
+    static async getAvailableItems(warehouseId) {
+        const sql = `
+            SELECT DISTINCT b.*
+            FROM barang b
+            INNER JOIN transaksi t ON b.id_barang = t.id_barang
+            WHERE t.id_gudang = $1 AND t.deleted_at IS NULL
+            ORDER BY b.nama_barang;
+        `;
+        const result = await query(sql, [warehouseId]);
+        return result.rows;
+    }
+
+    /** Get transaction history for warehouse */
+    static async getTransactionHistory(warehouseId, limit = 50) {
+        const sql = `
+            SELECT t.*, b.nama_barang, b.kode_barang
+            FROM transaksi t
+            INNER JOIN barang b ON t.id_barang = b.id_barang
+            WHERE t.id_gudang = $1 AND t.deleted_at IS NULL
+            ORDER BY t.tanggal_transaksi DESC
+            LIMIT $2;
+        `;
+        const result = await query(sql, [warehouseId, limit]);
+        return result.rows;
+    }
+
+    /** Get summary stats for dashboard */
+    static async getSummaryStats() {
+        const sql = `
+            SELECT
+                COUNT(DISTINCT id_gudang) as total_warehouses,
+                COUNT(DISTINCT lokasi) as unique_locations,
+                SUM(kapasitas) as total_capacity
+            FROM gudang
+            WHERE deleted_at IS NULL;
+        `;
+        const result = await query(sql);
+        return result.rows[0];
+    }
+}
+
+module.exports = GudangModel;
