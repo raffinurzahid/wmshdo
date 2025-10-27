@@ -1,5 +1,5 @@
 1. aku ada ide claude, kita bikin halaman baru aja list-barang.ejs aja gimana? buat nyimpen seluruh list" barang Rcv, Asg, dan Dps, skrg kita abaikan aja dulu master gudang barangnya, kita bikin list barang isi kolom tabelnya:
-Kode TX, Kode Barang, Jenis Barang,Asset, State, NPK, Nama, Qty, Lokasi, Tanggal itu semua di ambil dari gabungan halaman transaksi dan master-barang paham kan? jadi tuh ini halaman read only aja, trs dia design nya sama kyk yg lain aja dari segi tabel header font  samain aja
+Kode Barang, Jenis Barang, Asset State, NPK, Nama, Lokasi, Tanggal itu semua di ambil dari gabungan halaman transaksi dan master-barang paham kan? jadi tuh ini halaman read only aja, trs dia design nya sama kyk yg lain aja dari segi tabel header font  samain aja
 2. nicee tull gituu trs auto stock 1 aja input manualnya trs ead only begitu nice claude option A aku lebih suka
 3. oh iyaa kamu bikin halaman list barang hampir mirip dengan master gudang barang aja secara designnya aja tapi tabelnya nyesuain apa yg aku mau dan notifikasi header profil itu harus udh bisa bekerja
 coba liat codingan ku kamu pasti paham, aku cuma pgn rombak design master gudang tapi itu terakhir aja skrg fokus sama yg aku au aja paham?
