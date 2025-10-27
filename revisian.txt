@@ -1,0 +1,9 @@
+1. adakan angka di pie chart dan diagram (done)
+2. kode barang auto increament 
+3. export csv bisa di rcv aja 
+4. npk auto generate nama karyawan
+5. npk di tambah 0 ketika digit kurang dari 5
+6. asg tambahkan logicnya ketika barang di asg tidak bisa di asg lagi lansung auto tolak
+dari sistem dan lansung close
+7. list barang gudang gabungan dengan transactions
+8. notifikasi harus beli barang
