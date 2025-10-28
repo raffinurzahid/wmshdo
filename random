@@ -4,6 +4,14 @@ Kode Barang, Jenis Barang, Asset State, NPK, Nama, Lokasi, Tanggal itu semua di 
 3. oh iyaa kamu bikin halaman list barang hampir mirip dengan master gudang barang aja secara designnya aja tapi tabelnya nyesuain apa yg aku mau dan notifikasi header profil itu harus udh bisa bekerja
 coba liat codingan ku kamu pasti paham, aku cuma pgn rombak design master gudang tapi itu terakhir aja skrg fokus sama yg aku au aja paham?
 
+
+-yang export csv tuh maksudnya ketika aku melakukan filter transaksi RCV nah yg di download rcv semua maksdunya gitu begitu juga asg dan dpsnya paham ga? jadi bisa full download semua dan bisa salah satunya
+ -jgn sampai sampai salah asset state itu (In Store, In Use, Disposal dan Expired) nah kalo status itu (New dan Second)  bisa pilih\
+-pakai ini NB157-14 gitu 
+-kode_barang aja di database gitu intinya kemauan ku semua sudah sama dengan database 
+-semua kolom yg di tabel halaman transaksi yaa 
+ kalo bisa hapus kode" yang ngga perlu yaa kalo bisa lebih di singkat aja tetapi tidak menghilangkan  logic" ini yg sudah benar okeeyy? soalnya banyak banget kode yg double atau salah disananya jadi ketumpuk okeeyy, berikan semua kodenya versi full dengan yg benar yaa kita kerjain backendnya dulu ya gass ngoding
+
 okwe nice gpt berhasil
 api/transaksi/item-details?baseCode=NB157:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)
 itu kenapa? padahal di master barang data tuh ada NB157 nya?
