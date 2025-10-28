@@ -4,6 +4,9 @@ Kode Barang, Jenis Barang, Asset State, NPK, Nama, Lokasi, Tanggal itu semua di 
 3. oh iyaa kamu bikin halaman list barang hampir mirip dengan master gudang barang aja secara designnya aja tapi tabelnya nyesuain apa yg aku mau dan notifikasi header profil itu harus udh bisa bekerja
 coba liat codingan ku kamu pasti paham, aku cuma pgn rombak design master gudang tapi itu terakhir aja skrg fokus sama yg aku au aja paham?
 
+okwe nice gpt berhasil
+api/transaksi/item-details?baseCode=NB157:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+itu kenapa? padahal di master barang data tuh ada NB157 nya?
 
 rena miyshita
 link claude ai iphone
